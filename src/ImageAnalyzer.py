@@ -178,7 +178,7 @@ class ImageAnalyzer(object):
             top_sorted_results: a list of emotional objects detected, each element is a list of tuples of the top sentiments
         """
         results = self.get_emotion(path)
-        length = len(emotion_result)
+        length = len(results)
         sorted_results = [sorted(result['scores'].items(), key=lambda x: x[1], reverse=True) for result in results]
         top_sorted_results = [sorted_result[:top] for sorted_result in sorted_results]
         return length, top_sorted_results
