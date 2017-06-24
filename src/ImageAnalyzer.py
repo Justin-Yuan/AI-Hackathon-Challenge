@@ -167,7 +167,7 @@ class ImageAnalyzer(object):
         return result 
 
 
-    def decode_emotion(self, path, top=3):
+    def decode_emotion(self, path, top=7):
         """ decode the given image with emotion related information
 
         Arguments:
@@ -180,7 +180,7 @@ class ImageAnalyzer(object):
         """
         results = self.get_emotion(path)
         length = len(results)
-        if length != 0:
+        if length == 0:
             return length, []
         else:
             sorted_results = [sorted(result['scores'].items(), key=lambda x: x[1], reverse=True) for result in results]
