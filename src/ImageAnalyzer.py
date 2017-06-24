@@ -12,7 +12,19 @@ import operator
 import numpy as np
 
 class ImageAnalyzer(object):
-    """
+    """ A analyzer for images, decodes information on emotions and context from the image 
+
+    Usage Example:
+        # initialize an empty ImageAnalyzer
+        imgAnalyzer = ImageAnalyer()
+
+        img_path = ...
+
+        # get emotion related info
+        length, top_sorted_results = imgAnalyzer.decode_emotion(img_path)
+
+        # get context related info 
+        title, description, keywords = imgAnalyzer.decode_context(img_path)
     """
 
     def __init__(self, url=None, key=None, max_entry=10):
@@ -34,8 +46,6 @@ class ImageAnalyzer(object):
         }
         
     def set_url(self, emotion=True, context=False, url=None):
-        """
-        """
         if emotion:
             self._url = 'https://westus.api.cognitive.microsoft.com/emotion/v1.0/recognize'
         elif context:
@@ -44,8 +54,6 @@ class ImageAnalyzer(object):
             self._url = url  
 
     def set_key(self, emotion=True, context=False, key=None):
-        """
-        """
         if emotion:
             self._key = 'ab7ce6eb315b40a4a9fece00b4d61727'
         elif context:
@@ -54,16 +62,13 @@ class ImageAnalyzer(object):
             self._key = key  
 
     def set_data(self, path):
-        """
-        """
         with open( path, 'rb' ) as f:
             self.data = f.read()
 
     def set_headers_key(self, other_key=None):
-        """
-        """
         self._headers['Ocp-Apim-Subscription-Key'] = self._key if not other_key else other_key
     
+
     def processRequest(self, json, data, headers, params, url ):
         """
         Helper function to process the request to Project Oxford
@@ -109,8 +114,17 @@ class ImageAnalyzer(object):
             
         return result
 
+
     def get_emotion(self, path):
-        """
+        """ return a list of json objects for the emotions in the image 
+
+        Arguments:
+            path: image path, a string
+
+        Returns:
+            result -> [json obj1, json obj2, ...] 
+                json obj -> {'scores': {'sadness': , 'fear': , ...},
+                            'facecRectangle':{'top': , 'left': , 'width': , 'height': }}
         """
         self.set_data(path)
 
@@ -121,8 +135,26 @@ class ImageAnalyzer(object):
         result = self.processRequest( self._json, self.data, self._headers, self._params, self._url ) 
         return result 
 
+
     def get_context(self, path):
-        """
+        """ return a single json object for the image context
+
+        Arguments:
+            path: image path, a string
+
+        Returns:
+            result -> {'metadata': , 'color': , 'requestId': , 'description': , 'categories': }
+                metadata -> {'height': , 'width': , 'format': }
+                color -> {'dominantColors':['White', ...],
+                            'accentColor': '...', 
+                            'dominantColorBackground: '...'
+                            'isBWImg': boolean,
+                            'dominantColorForeground': '...'}
+                requestedId: string 
+                description: {'captions': , 'tags': }
+                    captions -> [{'confidence': float, 'text': string (a complete description) }]
+                    tages -> [string1, string2, ...]
+                categories: [{'name': string (a short title), 'score': float}]
         """
         self.set_data(path)
 
@@ -132,6 +164,43 @@ class ImageAnalyzer(object):
 
         result = self.processRequest( self._json, self.data, self._headers, self._params, self._url )
         return result 
+
+
+    def decode_emotion(self, path, top=3):
+        """ decode the given image with emotion related information
+
+        Arguments:
+            path: image path, a string
+            top: the top sentiments you want, an integer
+
+        Returns:
+            length: an integer 
+            top_sorted_results: a list of emotional objects detected, each element is a list of tuples of the top sentiments
+        """
+        results = self.get_emotion(path)
+        length = len(emotion_result)
+        sorted_results = [sorted(result['scores'].items(), key=lambda x: x[1], reverse=True) for result in results]
+        top_sorted_results = [sorted_result[:top] for sorted_result in sorted_results]
+        return length, top_sorted_results
+
+
+    def decode_context(self, path):
+        """ decode the given image with context related information 
+
+        Arguments:
+            path: image path, a string 
+
+        Returns:
+            title: a string
+            description: a string
+            keywords: a list of strings
+        """
+        results = self.get_context(path)
+        title = results['categories'][0]['name']
+        description = results['description']['captions'][0]['text']
+        keywords = results['description']['tags']
+        return title, description, keywords
+
 
 
     
