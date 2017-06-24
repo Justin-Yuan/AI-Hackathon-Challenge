@@ -11,6 +11,7 @@ import requests
 import operator
 import numpy as np
 
+
 class ImageAnalyzer(object):
     """ A analyzer for images, decodes information on emotions and context from the image 
 
@@ -179,9 +180,12 @@ class ImageAnalyzer(object):
         """
         results = self.get_emotion(path)
         length = len(results)
-        sorted_results = [sorted(result['scores'].items(), key=lambda x: x[1], reverse=True) for result in results]
-        top_sorted_results = [sorted_result[:top] for sorted_result in sorted_results]
-        return length, top_sorted_results
+        if length != 0:
+            return length, []
+        else:
+            sorted_results = [sorted(result['scores'].items(), key=lambda x: x[1], reverse=True) for result in results]
+            top_sorted_results = [sorted_result[:top] for sorted_result in sorted_results]
+            return length, top_sorted_results
 
 
     def decode_context(self, path):
