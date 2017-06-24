@@ -1,0 +1,12 @@
+sentiment,emotion
+anger,anger
+positive,happiness
+positive,neutral
+anticipation,neutral 
+fear,fear
+negative,contempt
+disgust,disgust 
+sadness,sadness 
+trust,neutral 
+surprise,surprise
+joy,happiness
