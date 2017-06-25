@@ -7,9 +7,10 @@ Global AI Hackathon
 from __future__ import print_function
 import time 
 import requests
-# import cv2
+import cv2
 import operator
 import numpy as np
+import os 
 
 
 class ImageAnalyzer(object):
@@ -116,6 +117,28 @@ class ImageAnalyzer(object):
         return result
 
 
+    def renderResultOnImage( self, result, path, base='../processed_imgs/'):  
+        """Display the obtained results onto the input image"""
+        image_name = os.path.splitext(os.path.basename(path))[0]
+        # print(image_name)
+        with open( path, 'rb' ) as f:
+            data = f.read()
+        data8uint = np.fromstring( data, np.uint8 ) # Convert string to an unsigned int array
+        img = cv2.cvtColor( cv2.imdecode( data8uint, cv2.IMREAD_COLOR ), cv2.COLOR_BGR2RGB )
+
+        for currFace in result:
+            faceRectangle = currFace['faceRectangle']
+            cv2.rectangle( img,(faceRectangle['left'],faceRectangle['top']), (faceRectangle['left']+faceRectangle['width'], faceRectangle['top'] + faceRectangle['height']), color = (255,0,0), thickness = 5 )
+
+        for currFace in result:
+            faceRectangle = currFace['faceRectangle']
+            currEmotion = max(currFace['scores'].items(), key=operator.itemgetter(1))[0]
+
+            textToWrite = "%s" % ( currEmotion )
+            cv2.putText( img, textToWrite, (faceRectangle['left'],faceRectangle['top']-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,0,0), 1 )
+            cv2.imwrite(base+image_name+'_processed.jpg', cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
+
+
     def get_emotion(self, path):
         """ return a list of json objects for the emotions in the image 
 
@@ -212,6 +235,7 @@ class ImageAnalyzer(object):
         """
         length, top_sorted_results, original_results = self.decode_emotion(path, top=top)
         title, description, keywords = self.decode_context(path)
+        self.renderResultOnImage(original_results, path)
         return {'length': length,
                 'top_sorted_results': top_sorted_results,
                 'original_results': original_results,

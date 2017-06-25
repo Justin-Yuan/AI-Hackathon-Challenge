@@ -1,0 +1,1 @@
+a folder to place processed images with bounding boxes and top sentiments
