@@ -34,6 +34,9 @@ class MemeRanker(object):
         self.emotions_in_quotes = {}
         self.tally_dataset_sentiments()
 
+        self.likes = {}
+        self.normalize_likes()
+
     def load_dataset(self, path):
         with open(path, 'rb') as infile:
             self._database = pickle.load(infile)
@@ -99,6 +102,15 @@ class MemeRanker(object):
         normalized_sentiment_list = [(key, temp_normalized_sentiment_dict[key]/squared_value_sum) for key in temp_normalized_sentiment_dict]
         self.sentiment_list  = normalized_sentiment_list
 
+    def normalize_likes(self):
+        likes_dict = {}
+        total = 0
+        for line in self._database['quotes']:
+            likes_dict[line] = self._database['likes'][line][0]
+            total += self._database['likes'][line][0]
+        for line in self._database['quotes']:
+            likes_dict[line] = likes_dict[line] / total 
+        self.likes = likes_dict
 
     def get_sentiment_similarity(self, query_sentiments, candidate_line, metric="euclidean"):
         """
@@ -133,7 +145,7 @@ class MemeRanker(object):
         rank_score = 0
         rank_score += self.sentiment_weight * self.get_sentiment_similarity(self.sentiment_list, candidate_line)
         rank_score += self.context_weight * self.get_context_similarity(query, candidate_line)
-        rank_score += self.like_weight * self._database['likes'][candidate_line][0]
+        rank_score += self.like_weight * self.likes[candidate_line]
         return rank_score
 
 
@@ -146,6 +158,7 @@ class MemeRanker(object):
 
         ranks = []
         count = 0
+        total = 0
 
         for line in self._database['quotes']:
             score = self.get_rank_score(query, line)
@@ -153,12 +166,18 @@ class MemeRanker(object):
                 count += 1
                 ranks.append((line, score))
                 ranks.sort(key=lambda x: x[1], reverse=False)
+                print(ranks)
             else:
                 for pair in ranks:
+                    # print("next")
                     if pair[1] < score:
                         ranks[0] = (line, score)
                         ranks.sort(key=lambda x: x[1], reverse=False)
                         break 
+            # print("finding next line ")
+            # print(ranks)
+            total += 1
+        print(total)
         return ranks 
 
             
