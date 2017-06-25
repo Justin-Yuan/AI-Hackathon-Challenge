@@ -125,7 +125,7 @@ class ImageAnalyzer(object):
         Returns:
             result -> [json obj1, json obj2, ...] 
                 json obj -> {'scores': {'sadness': , 'fear': , ...},
-                            'facecRectangle':{'top': , 'left': , 'width': , 'height': }}
+                            'faceRectangle':{'top': , 'left': , 'width': , 'height': }}
         """
         self.set_data(path)
 
