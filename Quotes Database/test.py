@@ -16,7 +16,7 @@ print()
 print("Total number of quotes: ")
 print(len(quotes))
 print()
-for i in range(3):
+for i in range(159, 161):
     quote = quotes[i]
     print("Sample Quotes: ")
     print(quote)
