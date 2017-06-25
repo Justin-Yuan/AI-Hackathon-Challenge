@@ -30,13 +30,17 @@ class MemeRanker(object):
         self.like_weight = 1
 
         self.sentiment_list = []
-        self.emotions_in_quotes = self.tally_dataset_sentiments()
+
+        self.emotions_in_quotes = {}
+        self.tally_dataset_sentiments()
 
     def load_dataset(self, path):
         with open('path', 'rb') as infile:
             self._database = pickle.load(infile)
 
     def tally_dataset_sentiments(self):
+        """
+        """
         temp_dict = {}
         for key in self._database['emotions_in_quotes']:
             temp_dict[key] = {'sadness':0, 'contempt':0, 'neutral':0, 'happiness':0, 'surprise':0, 'fear':0, 'disgust':0}
@@ -46,7 +50,7 @@ class MemeRanker(object):
                 each_key_count += 1
             for sent in temp_dict[key]:
                 temp_dict[key][sent] = temp_dict[key][sent] / each_key_count
-        return temp_dict
+        self.emotions_in_quotes = temp_dict
             
     def set_sentiment_weight(self, new_sentiment_weight):
         self.sentiment_weight = new_sentiment_weight
@@ -95,9 +99,11 @@ class MemeRanker(object):
         """
         score = 0
         if metric == "euclidean":
-            score += sum([math.pow(item[1]-self._database['candidate_line']['sentiments'][item[0]], 2.0) for item in query_sentiments.items()])     
+            score += sum([math.pow(item[1]-self.emotions_in_quotes[candidate_line][item[0]], 2.0) for item in query_sentiments.items()])     
+            # score += sum([math.pow(item[1]-self._database[candidate_line]['sentiments'][item[0]], 2.0) for item in query_sentiments.items()])     
         elif metric == "weighted":
-            score += sum([item[1]*math.pow(item[1]-self._database[candidate_line]['sentiments'][item[0]], 2.0) for item in query_sentiments.items()])     
+            score += sum([item[1]*math.pow(item[1]-self.emotions_in_quotes[candidate_line][item[0]], 2.0) for item in query_sentiments.items()]) 
+            # score += sum([item[1]*math.pow(item[1]-self._database[candidate_line]['sentiments'][item[0]], 2.0) for item in query_sentiments.items()])     
         return score 
     
 
