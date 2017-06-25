@@ -21,14 +21,13 @@ class MemeRanker(object):
     def __init__(self, file_path, cut_off_length=50):
         # load in the movie/goodread lines
         self._database = None
-        self.load_dataset(file_path)
+        self.load_dataset(file_path) # Load the quotes file
 
-        self.cut_off_length = 50
-        self.length_weight = 5
-
-        self.sentiment_weight = 100 
+        self.cut_off_length = 25 # Over 50 char is not desired
+        self.sentiment_weight = 50 
+      
         self.context_weight = 10
-        self.like_weight = 1
+        self.like_weight = 0.05
 
         self.sentiment_list = []
 
@@ -46,7 +45,7 @@ class MemeRanker(object):
         """ load the "emotions in quotes" into format {quote:{sentiment:score, ...}, ...}
         """
         temp_dict = {}
-        for key in self._database['emotions_in_quotes']:
+        for key in self._database['emotions_in_quotes']: # Each key is a quote
             temp_dict[key] = {'sadness':0, 'contempt':0, 'neutral':0, 'happiness':0, 'surprise':0, 'fear':0, 'disgust':0, 'anger':0}
             each_key_count = 0
             for sent in self._database['emotions_in_quotes'][key][0]:
@@ -76,6 +75,7 @@ class MemeRanker(object):
 
     def cut_off_regularizer(self, length):
         """
+        To be checked: 
         """
         return 1 if length < self.cut_off_length else 0
 
@@ -175,7 +175,6 @@ class MemeRanker(object):
                 count += 1
                 ranks.append((line, score))
                 ranks.sort(key=lambda x: x[1], reverse=False)
-                # print(ranks)
             else:
                 for pair in ranks:
                     # print("next")
@@ -186,7 +185,7 @@ class MemeRanker(object):
             # print("finding next line ")
             # print(ranks)
             total += 1
-        print(total)
+        
         return ranks 
 
             
