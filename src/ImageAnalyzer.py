@@ -117,9 +117,13 @@ class ImageAnalyzer(object):
         return result
 
 
-    def renderResultOnImage( self, result, path, base='../processed_imgs/'):  
+    def renderResultOnImage( self, result, path, base='../processed_imgs/', loc="default"):  
         """Display the obtained results onto the input image"""
         image_name = os.path.splitext(os.path.basename(path))[0]
+        if loc == "current":
+            folder = os.path.dirname(path) + '/'
+        else:
+            folder = base
         # print(image_name)
         with open( path, 'rb' ) as f:
             data = f.read()
@@ -136,7 +140,7 @@ class ImageAnalyzer(object):
 
             textToWrite = "%s" % ( currEmotion )
             cv2.putText( img, textToWrite, (faceRectangle['left'],faceRectangle['top']-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,0,0), 1 )
-            cv2.imwrite(base+image_name+'_processed.jpg', cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
+            cv2.imwrite(folder+image_name+'_processed.jpg', cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
 
 
     def get_emotion(self, path):
@@ -235,7 +239,7 @@ class ImageAnalyzer(object):
         """
         length, top_sorted_results, original_results = self.decode_emotion(path, top=top)
         title, description, keywords = self.decode_context(path)
-        self.renderResultOnImage(original_results, path)
+        self.renderResultOnImage(original_results, path, loc="current")
         return {'length': length,
                 'top_sorted_results': top_sorted_results,
                 'original_results': original_results,
