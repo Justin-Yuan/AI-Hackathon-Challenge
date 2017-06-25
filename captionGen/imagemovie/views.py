@@ -18,11 +18,11 @@ def getcap_ajax(request):
    if form.is_valid():
       photo = form.save()
       url = '/media/photos/test.jpg'
-      caption,return_path =  get_quote('C:/git\AI-Hackathon-Challenge/captionGen'+photo.file.url)
+      caption,return_path =  get_quote('.'+photo.file.url)
       # caption = ["The whole problem with the world is that fools and fanatics are always so certain of themselves, and wiser people so full of doubts.",
       #            "The greater danger for most of us lies not in setting our aim too high and falling short, but in setting our aim too low, and achieving our mark.",
       #            "I can write better than anybody who can write faster, and I can write faster than anybody who can write better."]
-      data = {'is_valid': True,'caption': caption,'name': photo.file.name, 'url': return_path.split('captionGen')[1]}
+      data = {'is_valid': True,'caption': caption,'name': photo.file.name, 'url': return_path}
    else:
       data = {'is_valid': False}
    return JsonResponse(data)
@@ -51,7 +51,7 @@ def get_quote(imgpath):
 
    print("Analyzer test success")
 
-   memeRanker = MemeRanker("C:/git/AI-Hackathon-Challenge/Quotes Database/quotes_analysis_results.p")
+   memeRanker = MemeRanker("../Quotes Database/quotes_analysis_results.p")
 
    print('Ranker loaded success')
 
