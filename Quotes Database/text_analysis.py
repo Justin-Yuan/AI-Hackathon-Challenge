@@ -22,11 +22,14 @@ def read_quotes(file_path,words,emotions,word2emotions):
     quotes = [] #  A list to save the text of quotes
     print("Start reading: " + file_path)
     quotes_list = json.loads(open(file_path).read())
-    len_quotes_list = len(quotes_list)
+    
 
-    for i in range(len_quotes_list):
-        quotes.append(quotes_list[i]['text'].replace('\n','').strip().replace('“','').replace('”',''))
+    for i in range(len(quotes_list)):
+        quote = quotes_list[i]['text'].replace('\n','').strip().replace('“','').replace('”','')
+        if quote != '':
+            quotes.append(quote)
 
+    len_quotes_list = len(quotes)
     quotes2tags = {quotes[i]:[] for i in range(len_quotes_list)}
     quotes2like = {quotes[i]:[] for i in range(len_quotes_list)}
     quotes2emotions = {quotes[i]:[] for i in range(len_quotes_list)}
