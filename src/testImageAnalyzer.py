@@ -17,7 +17,7 @@ if __name__ == '__main__':
     print(context_result)
     print()
 
-    length, top_sorted_results = imgAnalyzer.decode_emotion(img_path)
+    length, top_sorted_results, original_results = imgAnalyzer.decode_emotion(img_path)
 
     print("emotion")
 
@@ -27,6 +27,7 @@ if __name__ == '__main__':
 
     print(length)
     print(top_sorted_results)
+    print(original_results)
     print(title)
     print(description)
     print(keywords)

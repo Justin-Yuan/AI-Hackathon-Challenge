@@ -177,15 +177,16 @@ class ImageAnalyzer(object):
         Returns:
             length: an integer 
             top_sorted_results: a list of emotional objects detected, each element is a list of tuples of the top sentiments
+            results: the original results as a list of json objects 
         """
         results = self.get_emotion(path)
         length = len(results)
         if length == 0:
-            return length, []
+            return length, [], []
         else:
             sorted_results = [sorted(result['scores'].items(), key=lambda x: x[1], reverse=True) for result in results]
             top_sorted_results = [sorted_result[:top] for sorted_result in sorted_results]
-            return length, top_sorted_results
+            return length, top_sorted_results, results 
 
 
     def decode_context(self, path):
@@ -204,6 +205,20 @@ class ImageAnalyzer(object):
         description = results['description']['captions'][0]['text']
         keywords = results['description']['tags']
         return title, description, keywords
+
+
+    def decode_image(self, path, top=7):
+        """ pack all decoded information into a python dictionary to return 
+        """
+        length, top_sorted_results, original_results = self.decode_emotion(path, top=top)
+        title, description, keywords = self.decode_context(path)
+        return {'length': length,
+                'top_sorted_results': top_sorted_results,
+                'original_results': original_results,
+                'title': title,
+                'description': description,
+                'keywords': keywords,
+                }
 
 
 
