@@ -24,8 +24,9 @@ class MemeRanker(object):
         self.load_dataset(file_path) # Load the quotes file
 
         self.cut_off_length = 25 # Over 50 char is not desired
+        self.length_weight = 5
         self.sentiment_weight = 50 
-      
+        
         self.context_weight = 10
         self.like_weight = 0.05
 
