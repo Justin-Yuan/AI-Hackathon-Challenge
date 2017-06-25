@@ -18,17 +18,27 @@ if __name__ == '__main__':
 
     print("context")
 
-    print(length)
-    print(top_sorted_results)
-    print(original_results)
-    print(title)
-    print(description)
-    print(keywords)
+    # print(length)
+    # print(top_sorted_results)
+    # print(original_results)
+    # print(title)
+    # print(description)
+    # print(keywords)
 
     print("Analyzer test success")
 
     memeRanker = MemeRanker("../Quotes Database/quotes_analysis_results.p")
 
     print('Ranker loaded success')
+
+    query = imgAnalyzer.decode_image(img_path)
+
+    print("generated query")
+
+    lines = memeRanker.recommend_lines(query)
+
+    print("ranked lines returned!!!")
+    print()
+    print(lines)
 
     

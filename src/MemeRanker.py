@@ -35,21 +35,27 @@ class MemeRanker(object):
         self.tally_dataset_sentiments()
 
     def load_dataset(self, path):
-        with open('path', 'rb') as infile:
+        with open(path, 'rb') as infile:
             self._database = pickle.load(infile)
 
     def tally_dataset_sentiments(self):
-        """
+        """ load the "emotions in quotes" into format {quote:{sentiment:score, ...}, ...}
         """
         temp_dict = {}
         for key in self._database['emotions_in_quotes']:
-            temp_dict[key] = {'sadness':0, 'contempt':0, 'neutral':0, 'happiness':0, 'surprise':0, 'fear':0, 'disgust':0}
+            temp_dict[key] = {'sadness':0, 'contempt':0, 'neutral':0, 'happiness':0, 'surprise':0, 'fear':0, 'disgust':0, 'anger':0}
             each_key_count = 0
             for sent in self._database['emotions_in_quotes'][key][0]:
-                temp_dict[key][sent] += 1
+                if sent[-1] == " ":
+                    temp_sent = sent[:-1]
+                    temp_dict[key][temp_sent] += 1
+                else:
+                    temp_dict[key][sent] += 1
                 each_key_count += 1
             for sent in temp_dict[key]:
-                temp_dict[key][sent] = temp_dict[key][sent] / each_key_count
+                # there are items with no sentiment? 
+                temp_dict[key][sent] = temp_dict[key][sent] / (each_key_count if each_key_count!=0 else 1)
+            # print("one pass succeeded")
         self.emotions_in_quotes = temp_dict
             
     def set_sentiment_weight(self, new_sentiment_weight):
@@ -98,11 +104,13 @@ class MemeRanker(object):
         """
         """
         score = 0
+        # print(query_sentiments)
+        # print(candidate_line)
         if metric == "euclidean":
-            score += sum([math.pow(item[1]-self.emotions_in_quotes[candidate_line][item[0]], 2.0) for item in query_sentiments.items()])     
+            score += sum([math.pow(item[1]-self.emotions_in_quotes[candidate_line][item[0]], 2.0) for item in query_sentiments])     
             # score += sum([math.pow(item[1]-self._database[candidate_line]['sentiments'][item[0]], 2.0) for item in query_sentiments.items()])     
         elif metric == "weighted":
-            score += sum([item[1]*math.pow(item[1]-self.emotions_in_quotes[candidate_line][item[0]], 2.0) for item in query_sentiments.items()]) 
+            score += sum([item[1]*math.pow(item[1]-self.emotions_in_quotes[candidate_line][item[0]], 2.0) for item in query_sentiments]) 
             # score += sum([item[1]*math.pow(item[1]-self._database[candidate_line]['sentiments'][item[0]], 2.0) for item in query_sentiments.items()])     
         return score 
     
@@ -139,7 +147,7 @@ class MemeRanker(object):
         ranks = []
         count = 0
 
-        for line in self._database:
+        for line in self._database['quotes']:
             score = self.get_rank_score(query, line)
             if count < top:
                 count += 1
