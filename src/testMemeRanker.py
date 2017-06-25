@@ -8,7 +8,7 @@ if __name__ == '__main__':
     imgAnalyzer = ImageAnalyzer()
     print('ok')
 
-    img_path = '../imgs/test.jpg'
+    img_path = '../imgs/test2.jpg'
 
     length, top_sorted_results, original_results = imgAnalyzer.decode_emotion(img_path)
 
