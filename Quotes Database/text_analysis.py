@@ -18,7 +18,7 @@ len_quotes_list = len(quotes_list)
 
 quotes = []
 for i in range(len_quotes_list):
-    quotes.append(quotes_list[i]['text'].replace('\n',''))
+    quotes.append(quotes_list[i]['text'].replace('\n','').strip().replace('“','').replace('”',''))
 
 quotes2tags = {quotes[i]:[] for i in range(len_quotes_list)}
 quotes2like = {quotes[i]:[] for i in range(len_quotes_list)}
@@ -28,7 +28,7 @@ for i in range(len_quotes_list):
     quote = quotes_list[i] # Read a quote
     tags = quote['tags'] # Read tags in the quote
     like = [int(s) for s in quote['likes'].split() if s.isdigit()][0] # get the number of likes
-    # text = quote['text'].replace('\n','') # Get the text, remove '\n'
+    # text = quote['text'].replace('\n','').strip().replace('“','').replace('”','') # Get the text, remove '\n'
 
     # Analyze tags: if a tag is a keyword, find its corresponding emotion, and
     emotions_in_quote = [] # initialize a list
