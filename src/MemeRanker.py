@@ -147,7 +147,7 @@ class MemeRanker(object):
 
         ranks = []
         count = 0
-        '''
+        
         for line in self._database['quotes']:
             score = self.get_rank_score(query, line)
             if count < top:
@@ -160,13 +160,7 @@ class MemeRanker(object):
                         ranks[0] = (line, score)
                         ranks.sort(key=lambda x: x[1], reverse=False)
                         break 
-        '''
-        for line in self._database['quotes']:
-            score = self.get_rank_score(query, line) # Get a score of the query with 
-            if count < top:
-                count += 1
-                ranks.append((line, score))
-        ranks.sort(key=lambda x: x[1], reverse=False) # Rank by score
+        
         return ranks 
 
             
