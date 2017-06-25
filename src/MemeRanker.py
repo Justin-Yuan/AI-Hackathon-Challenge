@@ -25,6 +25,7 @@ class MemeRanker(object):
 
         self.cut_off_length = 25 # Over 50 char is not desired
         self.sentiment_weight = 50 
+      
         self.context_weight = 10
         self.like_weight = 0.05
 
@@ -69,11 +70,19 @@ class MemeRanker(object):
     def set_like_weight(self, new_like_weight):
         self.like_weight = new_like_weight
 
+    def set_length_weight(self, new_length_weight):
+        self.length_weight = new_length_weight 
+
     def cut_off_regularizer(self, length):
         """
         To be checked: 
         """
         return 1 if length < self.cut_off_length else 0
+
+    def length_regularizer(self, length):
+        """
+        """
+        return self.length_weight * length if length < self.cut_off_length else 0 
 
     def set_sentiment_list(self, query):
         self.sentiment_list = query['top_sorted_results']
@@ -122,7 +131,7 @@ class MemeRanker(object):
             score += sum([math.pow(item[1]-self.emotions_in_quotes[candidate_line][item[0]], 2.0) for item in query_sentiments])     
             # score += sum([math.pow(item[1]-self._database[candidate_line]['sentiments'][item[0]], 2.0) for item in query_sentiments.items()])     
         elif metric == "weighted":
-            score += sum([item[1]*math.pow(item[1]-self.emotions_in_quotes[candidate_line][item[0]], 2.0) for item in query_sentiments]) 
+            score += sum([item[1] * math.pow(item[1]-self.emotions_in_quotes[candidate_line][item[0]], 2.0) for item in query_sentiments]) 
             # score += sum([item[1]*math.pow(item[1]-self._database[candidate_line]['sentiments'][item[0]], 2.0) for item in query_sentiments.items()])     
         return score 
     
@@ -133,7 +142,7 @@ class MemeRanker(object):
         score = 0
         if metric == 'content':
             temp = candidate_line.split(' ')
-            score +=  len(set(query['keywords']) & set(temp)) / len(temp) * self.cut_off_regularizer(len(temp))
+            score +=  len(set(query['keywords']) & set(temp)) / len(temp) * self.cut_off_regularizer(len(temp)) - self.length_regularizer(len(temp))
         elif metric == 'semantic':
             pass  # thinking of using word2vec here 
         return score 
@@ -143,7 +152,7 @@ class MemeRanker(object):
         """
         """
         rank_score = 0
-        rank_score += self.sentiment_weight * self.get_sentiment_similarity(self.sentiment_list, candidate_line)
+        rank_score += self.sentiment_weight * self.get_sentiment_similarity(self.sentiment_list, candidate_line, metric="weighted")
         rank_score += self.context_weight * self.get_context_similarity(query, candidate_line)
         rank_score += self.like_weight * self.likes[candidate_line]
         return rank_score
@@ -166,7 +175,6 @@ class MemeRanker(object):
                 count += 1
                 ranks.append((line, score))
                 ranks.sort(key=lambda x: x[1], reverse=False)
-                
             else:
                 for pair in ranks:
                     # print("next")
