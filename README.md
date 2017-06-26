@@ -8,9 +8,9 @@ All copy rights are preserved.
 Generate image captions based on sentiment analysis and context retrieval. 
 
 ###  Example Outputs:
-![alt text]()
+![alt text](https://github.com/Justin-Yuan/AI-Hackathon-Challenge/blob/master/imgs/test1.png)
 
-![alt text]()
+![alt text](https://github.com/Justin-Yuan/AI-Hackathon-Challenge/blob/master/imgs/test2.png)
 
 ## Tools & APIS
 
